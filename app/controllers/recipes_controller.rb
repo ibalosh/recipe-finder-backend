@@ -1,27 +1,7 @@
 class RecipesController < ApplicationController
   def index
-    if params[:q].present?
-      query = params[:q].to_s.strip.downcase
-      terms = query.split(/\s+/).flat_map { |t| [ t.singularize, t.pluralize ] }.uniq
-
-      # Build ILIKE OR condition for ingredients
-      conditions = terms.map { "LOWER(raw_text) ILIKE ?" }.join(" OR ")
-      values = terms.map { |t| "%#{t}%" }
-
-      # Subquery: count how many matching ingredients per recipe
-      matching = Ingredient
-                   .select("recipe_id, COUNT(*) AS match_count")
-                   .where(conditions, *values)
-                   .group(:recipe_id)
-
-      # Join that to recipes and order by match_count
-      recipes = Recipe
-                  .joins("JOIN (#{matching.to_sql}) AS matches ON recipes.id = matches.recipe_id")
-                  .select("recipes.*, matches.match_count")
-                  .includes(:author, :category, :cuisine, :ingredients)
-                  .order("matches.match_count DESC")
-
-      @pagy, recipes = pagy(recipes)
+    if search_param.present? && search_param_terms.present?
+      @pagy, recipes = pagy(Recipe.matching_ingredients(search_param_terms))
     else
       @pagy, recipes = pagy(Recipe.includes(:author, :category, :cuisine, :ingredients))
     end
@@ -47,6 +27,14 @@ class RecipesController < ApplicationController
   end
 
   private
+
+  def search_param
+    params[:q]
+  end
+
+  def search_param_terms
+    search_param.to_s.strip.downcase.split(/\s+/).flat_map { |t| [ t.singularize, t.pluralize ] }.uniq
+  end
 
   def format_recipe(recipe)
     {
