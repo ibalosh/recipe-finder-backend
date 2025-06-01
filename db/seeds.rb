@@ -1,15 +1,10 @@
 # This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
+# development, test).
 
 require 'json'
 require 'benchmark'
+require 'uri'
+
 seed_file = 'recipes-en.json'
 
 def parse_seed_file(filename, number_of_lines = nil)
@@ -36,7 +31,7 @@ def seed_data(recipes, batch_size = 100)
           cook_time: data["cook_time"],
           prep_time: data["prep_time"],
           ratings: data["ratings"],
-          image_url: data["image"],
+          image_url: decoded_image_url(data["image"]),
           author:,
           category:,
           cuisine:
@@ -58,6 +53,21 @@ def seed_data(recipes, batch_size = 100)
       puts e.message
     end
   end
+end
+
+def decoded_image_url(image_url)
+  uri = URI(image_url)
+
+  # It's a proxy URL with ?url=... , with fallback to original if no 'url' param
+  if uri.query&.include?("url=")
+    params = URI.decode_www_form(uri.query).to_h
+    params["url"] || image_url
+  else
+    image_url
+  end
+rescue StandardError => e
+  puts "⚠️ Error decoding image from URL: #{image_url}"
+  raise e
 end
 
 data = parse_seed_file(seed_file)
