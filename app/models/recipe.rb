@@ -13,7 +13,7 @@ class Recipe < ApplicationRecord
   end
 
   def self.matching_ingredients(terms)
-    matches = Ingredient.matching_recipe_ids_by_terms(terms)
+    matches = Ingredient.matching_recipe_ids_by_ingredients_count(terms)
 
     joins("JOIN (#{matches.to_sql}) AS matches ON recipes.id = matches.recipe_id")
       .select("recipes.*, matches.match_count")
