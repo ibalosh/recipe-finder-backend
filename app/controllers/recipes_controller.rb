@@ -1,7 +1,10 @@
 class RecipesController < ApplicationController
   def index
     if search_param.present? && search_param_terms.present?
-      @pagy, recipes = pagy(Recipe.matching_ingredients(search_param_terms))
+      @pagy, recipes = pagy(
+        Recipe.matching_by_ingredients(search_param_terms).
+          includes(:author, :category, :cuisine, :ingredients)
+      )
     else
       @pagy, recipes = pagy(Recipe.includes(:author, :category, :cuisine, :ingredients))
     end

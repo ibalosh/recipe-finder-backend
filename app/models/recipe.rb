@@ -12,12 +12,11 @@ class Recipe < ApplicationRecord
     cuisine&.name || ""
   end
 
-  def self.matching_ingredients(terms)
+  def self.matching_by_ingredients(terms)
     matches = Ingredient.matching_recipe_ids_by_ingredients_count(terms)
 
     joins("JOIN (#{matches.to_sql}) AS matches ON recipes.id = matches.recipe_id")
       .select("recipes.*, matches.match_count")
-      .includes(:author, :category, :cuisine, :ingredients)
       .order("matches.match_count DESC")
   end
 end
