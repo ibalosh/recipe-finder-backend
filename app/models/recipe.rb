@@ -4,14 +4,6 @@ class Recipe < ApplicationRecord
   belongs_to :cuisine, optional: true
   has_many :ingredients
 
-  def author_name
-    author&.name || "deleted-user"
-  end
-
-  def cuisine_name
-    cuisine&.name || ""
-  end
-
   def self.matching_by_ingredients(terms)
     matches = Ingredient.matching_recipe_ids_by_ingredients_count(terms)
 

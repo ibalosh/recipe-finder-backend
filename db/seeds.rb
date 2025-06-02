@@ -22,6 +22,7 @@ def seed_data(recipes, batch_size = 100)
 
       batch.each_with_index do |data, i|
         data_line = data
+        data["author"] = data["author"].to_s.downcase.include?("deleteduser") ? nil : data["author"]
         author = data["author"].to_s.strip.present? ? Author.find_or_create_by!(name: data["author"]) : nil
         category = data["category"].to_s.strip.present? ? Category.find_or_create_by!(name: data["category"]) : nil
         cuisine = data["cuisine"].to_s.strip.present? ? Cuisine.find_or_create_by!(name: data["cuisine"]) : nil

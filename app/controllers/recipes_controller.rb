@@ -51,9 +51,9 @@ class RecipesController < ApplicationController
       cook_time: recipe.cook_time,
       ratings: recipe.ratings,
       image_url: recipe.image_url,
-      author: recipe.author_name,
-      category: recipe.category&.name,
-      cuisine: recipe.cuisine_name,
+      author: recipe.author&.name,
+      category: recipe.category.name,
+      cuisine: recipe.cuisine&.name,
       ingredients: recipe.ingredients.map(&:raw_text)
     }
   end
