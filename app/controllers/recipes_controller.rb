@@ -23,7 +23,11 @@ class RecipesController < ApplicationController
 
     render json: format_recipe(recipe)
   rescue ActiveRecord::RecordNotFound
-    render json: { error: "Recipe not found" }, status: :not_found
+    render json: {
+      error: {
+        message: "Recipe not found."
+      }
+    }, status: :not_found
   end
 
   private
