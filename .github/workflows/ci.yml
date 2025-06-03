@@ -70,10 +70,7 @@ jobs:
         run: sudo apt-get install -y libpq-dev
 
       - name: Set up database
-        run: |
-          cp config/database.yml.ci config/database.yml
-          bin/rails db:create
-          bin/rails db:schema:load
+        run: bin/rails db:prepare
 
       - name: Run tests
         run: bundle exec rspec
