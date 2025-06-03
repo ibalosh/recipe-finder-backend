@@ -3,10 +3,11 @@ class RecipesController < ApplicationController
     if search_param.present? && search_param_terms.present?
       @pagy, recipes = pagy(
         Recipe.matching_by_ingredients(search_param_terms).
-          includes(:author, :category, :cuisine, :ingredients)
+          includes(:author, :category, :cuisine, :ingredients),
+        limit: items_per_page
       )
     else
-      @pagy, recipes = pagy(Recipe.includes(:author, :category, :cuisine, :ingredients))
+      @pagy, recipes = pagy(Recipe.includes(:author, :category, :cuisine, :ingredients), limit: items_per_page)
     end
 
     render json: {
@@ -35,12 +36,19 @@ class RecipesController < ApplicationController
 
   private
 
+  def items_per_page
+    per_page = params[:per_page]
+    return nil unless per_page.present? && per_page.to_s.strip.match?(/\A\d+\z/)
+
+    per_page.to_i
+  end
+
   def search_param
-    params[:q]
+    params[:search]
   end
 
   def search_param_terms
-    search_param.to_s.strip.downcase.split(/\s+/).flat_map { |t| [ t.singularize, t.pluralize ] }.uniq
+    search_param.to_s.strip.downcase.split(/\s+/)
   end
 
   def format_recipe(recipe)
@@ -52,7 +60,7 @@ class RecipesController < ApplicationController
       ratings: recipe.ratings,
       image_url: recipe.image_url,
       author: recipe.author&.name,
-      category: recipe.category.name,
+      category: recipe.category&.name,
       cuisine: recipe.cuisine&.name,
       ingredients: recipe.ingredients.map(&:raw_text)
     }
