@@ -4,6 +4,8 @@ class Recipe < ApplicationRecord
   belongs_to :cuisine, optional: true
   has_many :ingredients
 
+  validates :instructions, presence: true, length: { minimum: 5 }
+
   # Returns recipes ordered by how many of their ingredients match the given search terms.
   #
   # Relevance is calculated as the percentage of a recipe's ingredients
@@ -36,6 +38,8 @@ class Recipe < ApplicationRecord
 
     if options[:detailed]
       base[:cuisine]    = cuisine && { id: cuisine.id, name: cuisine.name }
+      base[:short_description] = short_description
+      base[:instructions] = instructions
     end
 
     base

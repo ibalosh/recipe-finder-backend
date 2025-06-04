@@ -1,5 +1,7 @@
 source "https://rubygems.org"
 
+gem "faker"
+
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 8.0.2"
 # Use postgresql as the database for Active Record
@@ -59,6 +61,5 @@ end
 
 group :test do
   gem "factory_bot_rails"
-  gem "faker"
   gem "database_cleaner-active_record"
 end

@@ -4,6 +4,7 @@
 require 'json'
 require 'benchmark'
 require 'uri'
+require 'faker'
 
 seed_file = 'recipes-en.json'
 
@@ -22,10 +23,12 @@ def seed_data(recipes, batch_size = 100)
 
       batch.each_with_index do |data, i|
         data_line = data
+
         data["author"] = data["author"].to_s.downcase.include?("deleteduser") ? nil : data["author"]
         author = data["author"].to_s.strip.present? ? Author.find_or_create_by!(name: data["author"]) : nil
         category = data["category"].to_s.strip.present? ? Category.find_or_create_by!(name: data["category"]) : nil
-        cuisine = data["cuisine"].to_s.strip.present? ? Cuisine.find_or_create_by!(name: data["cuisine"]) : nil
+        cuisine = data["cuisine"].to_s.strip.present? ? Cuisine.find_or_create_by!(name: data["cuisine"]) :
+                    Cuisine.find_or_create_by!(name: Faker::Food.ethnic_category)
 
         recipe = Recipe.create!(
           title: data["title"],
@@ -35,7 +38,9 @@ def seed_data(recipes, batch_size = 100)
           image_url: decoded_image_url(data["image"]),
           author:,
           category:,
-          cuisine:
+          cuisine: cuisine,
+          short_description: Faker::Lorem.sentences(number: rand(0..3)).join,
+          instructions: Faker::Lorem.sentences(number: rand(5..15)).join,
         )
 
         data["ingredients"].each do |ingredient_line|
