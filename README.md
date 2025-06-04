@@ -1,5 +1,9 @@
 # 🥘 Recipe Finder - Backend - API
 
+Task on hand: It's dinner time! Create an application that helps users find the most relevant recipes that they can prepare with the ingredients that they have at home
+
+---
+
 A fast and lightweight Rails API for searching recipes by ingredients you already have at home.
 
 [![Test Status](https://github.com/ibalosh/recipe_time/actions/workflows/ci.yml/badge.svg)](https://github.com/ibalosh/recipe_time/actions)
