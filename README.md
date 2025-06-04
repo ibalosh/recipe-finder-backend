@@ -1,4 +1,4 @@
-# 🥘 Recipe Time
+# 🥘 Recipe Finder - Backend - API
 
 A fast and lightweight Rails API for searching recipes by ingredients you already have at home.
 
