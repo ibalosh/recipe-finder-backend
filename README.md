@@ -5,7 +5,9 @@ A fast and lightweight Rails API for searching recipes by ingredients you alread
 [![Test Status](https://github.com/ibalosh/recipe_time/actions/workflows/ci.yml/badge.svg)](https://github.com/ibalosh/recipe_time/actions)
 
 🌐 **Live frontend demo**: [recipe-time-frontend.onrender.com](https://recipe-time-frontend.onrender.com)
+
 💻 **Frontend repo**: [github.com/ibalosh/recipe_time_frontend](https://github.com/ibalosh/recipe_time_frontend)
+
 ---
 
 ## 💡 Project Overview
