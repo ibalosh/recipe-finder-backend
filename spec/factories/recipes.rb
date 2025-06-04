@@ -4,6 +4,8 @@ FactoryBot.define do
     cook_time { 10 }
     prep_time { 5 }
     image_url { Faker::Internet.url }
+    instructions { Faker::Lorem.sentences(number: 10) }
+    short_description { Faker::Lorem.sentences(number: 2) }
 
     transient do
       ingredients { [] }
