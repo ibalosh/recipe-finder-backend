@@ -10,7 +10,7 @@ A fast and lightweight Rails API for searching recipes by ingredients you alread
 
 ## 💡 Project Overview
 
-This application allows users to enter search recipes by one or more ingredients (e.g. `eggs mushrooms`) and get back recipes that contain the most relevant matches. The API ranks results by how many of the searched ingredients match, relative to each recipe’s total ingredients.
+This application allows users to search recipes by one or more ingredients (e.g. `eggs mushrooms`) and get back recipes that contain the most relevant matches. The API ranks results by how many of the searched ingredients match, relative to each recipe’s total ingredients.
 
 Example:  
 Searching for `eggs milk sugar` will prefer recipes that contain all three ingredients (100%) over those with partial matches (66%, 33%, etc).
@@ -19,11 +19,12 @@ Searching for `eggs milk sugar` will prefer recipes that contain all three ingre
 
 ## 🧠 Database Structure
 
-The data is imported from a large JSON dataset (9,000+ recipes). The database uses a **relational schema** with pragmatic denormalization in some areas to favor performance, maintainability, and development speed — especially in the context of a technical interview.
+The data is imported from a large JSON dataset (9,000+ recipes). The database uses a **relational schema** with pragmatic denormalization in some areas to favor performance, maintainability, and development speed.
+
 
 ### 📦 Key Tables
 
-- `recipes`: holds core metadata like title, rating, cook/prep time, and image URL
+- `recipes`: holds core metadata like title, rating, cook/prep time, image URL, short description, and instructions
 - `ingredients`: stores individual **raw strings** (e.g. `"2 eggs"`, `"½ cup milk"`) associated with a recipe
 - `authors`, `categories`, `cuisines`: normalized for clean associations and potential filtering
 
@@ -41,4 +42,15 @@ This tradeoff keeps the schema simple, performant, and tailored for full-text in
 
 ## ⚡ Performance Optimizations
 
-To ensure fast searches (goal: under **200ms** on Render), the following is in place: **PostgreSQL GIN index** on `ingredients.raw_text`.
+To ensure fast searches (goal: under **200ms** on Render), the following is in place:
+
+- **PostgreSQL GIN index** on `ingredients.raw_text`, enabling trigram-accelerated ILIKE queries
+- 🔥 **Measured local speedup**: recipe queries improved from **270ms → 80ms** after adding the index
+
+---
+
+## 🔐 Backend Improvements
+
+- ✅ **Test coverage** for data models and API endpoints
+- ✅ **Improved seeds**: transforms fields like URLs and enriches records with fields like `short_description` and `instructions` to make the frontend experience more engaging
+- ✅ **Basic authentication**: added token-based protection to prevent public access to the API
