@@ -24,4 +24,20 @@ class Recipe < ApplicationRecord
       .select("recipes.*, matches.relevance")
       .order("matches.relevance DESC")
   end
+
+  def as_json(options = {})
+    base = super({
+      only: [ :id, :title, :ratings, :image_url, :cook_time, :prep_time ]
+    }.merge(options))
+
+    base[:author] = author && { id: author.id, name: author.name }
+    base[:category] = category && { id: category.id, name: category.name }
+    base[:ingredients] = ingredients.map(&:raw_text)
+
+    if options[:detailed]
+      base[:cuisine]    = cuisine && { id: cuisine.id, name: cuisine.name }
+    end
+
+    base
+  end
 end

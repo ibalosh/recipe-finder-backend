@@ -11,7 +11,7 @@ class RecipesController < ApplicationController
     end
 
     render json: {
-      recipes: recipes.map { |r| format_recipe(r) },
+      recipes: recipes,
       pagination: {
         current_page: @pagy.page,
         next_page:    @pagy.next,
@@ -25,7 +25,7 @@ class RecipesController < ApplicationController
   def show
     recipe = Recipe.includes(:author, :category, :cuisine, :ingredients).find(params[:id])
 
-    render json: format_recipe(recipe)
+    render json: recipe.as_json(detailed: true)
   rescue ActiveRecord::RecordNotFound
     render json: {
       error: {
@@ -49,20 +49,5 @@ class RecipesController < ApplicationController
 
   def search_param_terms
     search_param.to_s.strip.downcase.split(/\s+/)
-  end
-
-  def format_recipe(recipe)
-    {
-      id: recipe.id,
-      title: recipe.title,
-      prep_time: recipe.prep_time,
-      cook_time: recipe.cook_time,
-      ratings: recipe.ratings,
-      image_url: recipe.image_url,
-      author: recipe.author&.name,
-      category: recipe.category&.name,
-      cuisine: recipe.cuisine&.name,
-      ingredients: recipe.ingredients.map(&:raw_text)
-    }
   end
 end
