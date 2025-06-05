@@ -19,7 +19,8 @@ A fast and lightweight Rails API for searching recipes by ingredients you alread
 This application allows users to search recipes by one or more ingredients (e.g. `eggs mushrooms`) and get back recipes that contain the most relevant matches. The API ranks results by how many of the searched ingredients match, relative to each recipe’s total ingredients.
 
 Example:  
-Searching for `eggs milk sugar` will prefer recipes that contain all three ingredients (100%) over those with partial matches (66%, 33%, etc).
+Searching for `eggs milk sugar` will prefer recipes that contain all ingredients compared to total number ingredients in the recipe.
+If ingredients are: `eggs` `milk` `sugar` `raspberries`, that would be a 75% match. If ingredients are `eggs` only that would be a 100% match.
 
 ---
 
