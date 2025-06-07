@@ -10,7 +10,7 @@ RSpec.describe 'GET /recipes', type: :request do
     end
 
     it 'returns recipes sorted by relevance' do
-      get '/recipes', params: { search: 'eggs milk sugar' }
+      get '/recipes', headers: auth_headers, params: { search: 'eggs milk sugar' }
 
       expect(response).to have_http_status(:ok)
       titles = JSON.parse(response.body)["recipes"].map { |r| r["title"] }
@@ -18,14 +18,14 @@ RSpec.describe 'GET /recipes', type: :request do
     end
 
     it 'returns empty array if no ingredients match' do
-      get '/recipes', params: { search: 'banana' }
+      get '/recipes', headers: auth_headers, params: { search: 'banana' }
 
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body)["recipes"]).to eq([])
     end
 
     it 'returns all recipes if search param is missing' do
-      get '/recipes'
+      get '/recipes', headers: auth_headers
 
       expect(response).to have_http_status(:ok)
       parsed = JSON.parse(response.body)
@@ -37,7 +37,7 @@ RSpec.describe 'GET /recipes', type: :request do
     it 'returns first 10 recipes by default pagination' do
       15.times { |i| create(:recipe, title: "Recipe #{i + 1}", ingredients: %w[egg milk]) }
 
-      get '/recipes', params: { search: 'egg', page: 1 }
+      get '/recipes', headers: auth_headers, params: { search: 'egg', page: 1 }
 
       expect(response).to have_http_status(:ok)
       parsed = JSON.parse(response.body)
@@ -61,7 +61,7 @@ RSpec.describe 'GET /recipes', type: :request do
     it 'returns second page with remaining results' do
       15.times { |i| create(:recipe, title: "Recipe #{i + 1}", ingredients: %w[egg milk]) }
 
-      get '/recipes', params: { search: 'egg', page: 2 }
+      get '/recipes', headers: auth_headers, params: { search: 'egg', page: 2 }
 
       parsed = JSON.parse(response.body)
 
@@ -81,7 +81,7 @@ RSpec.describe 'GET /recipes', type: :request do
     it 'respects custom per_page parameter' do
       12.times { |i| create(:recipe, title: "Recipe #{i + 1}", ingredients: %w[egg]) }
 
-      get '/recipes', params: { search: 'egg', page: 1, per_page: 5 }
+      get '/recipes', headers: auth_headers, params: { search: 'egg', page: 1, per_page: 5 }
 
       parsed = JSON.parse(response.body)
       expect(parsed["recipes"].size).to eq(5)
