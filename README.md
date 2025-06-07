@@ -1,6 +1,6 @@
 # 🥘 Recipe Finder - Backend - API
 
-Task on hand: It's dinner time! Create an application that helps users find the most relevant recipes that they can prepare with the ingredients that they have at home
+Task on hand: It's dinner time! Create an application that helps users find the most relevant recipes that they can prepare with the ingredients that they have at home.
 
 ---
 
@@ -17,10 +17,16 @@ A fast and lightweight Rails API for searching recipes by ingredients you alread
 ## 💡 Project Overview
 
 This application allows users to search recipes by one or more ingredients (e.g. `eggs mushrooms`) and get back recipes that contain the most relevant matches. The API ranks results by how many of the searched ingredients match, relative to each recipe’s total ingredients.
+ 
+Searching for `flour water oil` will prefer recipes that contain all ingredients compared to total number ingredients in the recipe.
 
-Example:  
-Searching for `eggs milk sugar` will prefer recipes that contain all ingredients compared to total number ingredients in the recipe.
-If ingredients are: `eggs` `milk` `sugar` `raspberries`, that would be a 75% match. If ingredients are `eggs` only that would be a 100% match.
+#### Example: searching for `["water", "oil", "flour"]`
+
+| Recipe                         | Total Ingredients | Matched Ingredients | Relevance (%) |
+|--------------------------------|-------------------|---------------------|---------------|
+| Gluten-Free Sourdough Starter  | 3                 | 3                   | 100.00        |
+| Fried Flour Tortilla Chips     | 2                 | 2                   | 100.00        |
+| Chapati (East African Bread)   | 6                 | 5                   |  83.33        |
 
 ---
 
