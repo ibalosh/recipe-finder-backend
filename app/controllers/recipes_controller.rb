@@ -47,6 +47,7 @@ class RecipesController < ApplicationController
     params[:search]
   end
 
+  # return array of terms which are separated by whitespace
   def search_param_terms
     search_param.to_s.strip.downcase.split(/\s+/)
   end

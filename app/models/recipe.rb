@@ -6,25 +6,24 @@ class Recipe < ApplicationRecord
 
   validates :instructions, presence: true, length: { minimum: 5 }
 
-  # Returns recipes ordered by how many of their ingredients match the given search terms.
+  # Find recipes ranked by how well their ingredients match the given search terms.
   #
-  # Relevance is calculated as the percentage of a recipe's ingredients
-  # that match the search terms. For example, if a recipe has 4 ingredients
-  # and 2 match the search terms, its relevance is 50%.
+  # @param terms [Array<String>] a list of ingredient tokens (e.g. %w[eggs mushroom])
+  # @return [ActiveRecord::Relation] recipes with two extra attributes:
+  #   - matched_ingredients   Integer count of ingredient-rows matching any term
+  #   - relevance             Float percentage match (matches / total_ingredients * 100)
   #
-  # It will also look for singular and plural matches.
-  #
-  # Example usage:
-  #   Recipe.matching_by_ingredients(["milk", "eggs", "sugar"])
+  # Results are ordered first by highest relevance %, then by highest match ingredient count.
   def self.matching_by_ingredients(terms)
     return none if terms.blank?
     terms = terms.flat_map { |t| [ t.singularize, t.pluralize ] }.uniq
 
+    # Build the subquery we defined on Ingredient
     matches = Ingredient.relevance_ranked_for(terms)
 
     joins("JOIN (#{matches.to_sql}) AS matches ON recipes.id = matches.recipe_id")
-      .select("recipes.*, matches.relevance")
-      .order("matches.relevance DESC")
+      .select("recipes.*, matches.relevance, matches.matched_ingredients")
+      .order("matches.relevance DESC, matches.matched_ingredients DESC")
   end
 
   def as_json(options = {})
