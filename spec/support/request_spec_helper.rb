@@ -1,5 +1,5 @@
 module RequestSpecHelper
   def auth_headers
-    { 'X-API-Token' => Rails.application.credentials.api_token }
+    { 'X-API-Token' => "test" }
   end
 end
