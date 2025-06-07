@@ -3,7 +3,6 @@ require 'rails_helper'
 RSpec.describe "Homes", type: :request do
   describe "GET /index" do
     it "returns http success" do
-      puts auth_headers
       get "/", headers: auth_headers
       expect(response).to have_http_status(:success)
     end
