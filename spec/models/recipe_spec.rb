@@ -48,5 +48,22 @@ RSpec.describe Recipe, type: :model do
       results = Recipe.matching_by_ingredients([])
       expect(results).to be_empty
     end
+
+
+    it 'returns case-insensitive results and matches substrings' do
+      create(:recipe, title: 'Plant Egg', ingredients: %w[EGGplant Milk])
+      create(:recipe, title: 'Plain Milk', ingredients: %w[milk])
+
+      results = Recipe.matching_by_ingredients(%w[egg])
+      expect(results.map(&:title)).to eq([ 'Plant Egg' ])
+    end
+
+    it 'returns correct order when relevance % is equal' do
+      create(:recipe, title: 'A', ingredients: %w[egg sugar])           # 2/2 → 100%, matches=2
+      create(:recipe, title: 'B', ingredients: %w[egg egg sugar])       # 3/3 → 100%, matches=3
+
+      results = Recipe.matching_by_ingredients(%w[egg sugar])
+      expect(results.map(&:title)).to eq(%w[B A])
+    end
   end
 end
