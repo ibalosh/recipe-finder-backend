@@ -42,5 +42,29 @@ RSpec.describe Ingredient, type: :model do
         expect(data.relevance.to_f).to eq(100.0)
       end
     end
+
+    it 'is case-insensitive and matches substrings' do
+      recipe = create(:recipe, title: 'SubMatch', ingredients: %w[EGGplant Egg])
+      data   = Ingredient.relevance_ranked_for(%w[egg]).find_by(recipe_id: recipe.id)
+
+      # "EGGplant" and "Egg White" both contain "egg"
+      aggregate_failures do
+        expect(data.matched_ingredients).to eq(2)
+        expect(data.total_ingredients).to eq(2)
+        expect(data.relevance.to_f).to eq(100.0)
+      end
+    end
+
+    it 'handles singular and plural search terms without double-counting' do
+      recipe = create(:recipe, title: 'SingularPlural', ingredients: %w[eggs oil])
+      data   = Ingredient.relevance_ranked_for(%w[egg eggs]).find_by(recipe_id: recipe.id)
+
+      aggregate_failures do
+        # Searching both "egg" and "eggs" against one "eggs" row counts as a single match
+        expect(data.matched_ingredients).to eq(1)
+        expect(data.total_ingredients).to eq(2)
+        expect(data.relevance.to_f).to eq(50.0)
+      end
+    end
   end
 end
