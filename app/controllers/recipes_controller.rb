@@ -1,22 +1,20 @@
 class RecipesController < ApplicationController
   def index
-    if search_param.present? && search_param_terms.present?
-      if search_by_ingredients
-        @pagy, recipes = pagy(
-          Recipe.matching_by_ingredients(search_param_terms).
-            includes(:author, :category, :cuisine, :ingredients),
-          limit: items_per_page
-        )
+    recipes_scope =
+      if search_param.present? && search_param_terms.present?
+        if search_by_ingredients
+          Recipe.matching_by_ingredients(search_param_terms)
+        else
+          Recipe.where("title ILIKE ?", "%#{search_param}%")
+        end
       else
-        @pagy, recipes = pagy(
-          Recipe.where("title ILIKE ?", "%#{search_param}%").
-            includes(:author, :category, :cuisine, :ingredients),
-          limit: items_per_page
-        )
+        Recipe.all
       end
-    else
-      @pagy, recipes = pagy(Recipe.includes(:author, :category, :cuisine, :ingredients), limit: items_per_page)
-    end
+
+    @pagy, recipes = pagy(
+      recipes_scope.includes(:author, :category, :cuisine, :ingredients),
+      limit: items_per_page
+    )
 
     render json: {
       recipes: recipes,
