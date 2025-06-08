@@ -1,11 +1,19 @@
 class RecipesController < ApplicationController
   def index
     if search_param.present? && search_param_terms.present?
-      @pagy, recipes = pagy(
-        Recipe.matching_by_ingredients(search_param_terms).
-          includes(:author, :category, :cuisine, :ingredients),
-        limit: items_per_page
-      )
+      if search_by_ingredients
+        @pagy, recipes = pagy(
+          Recipe.matching_by_ingredients(search_param_terms).
+            includes(:author, :category, :cuisine, :ingredients),
+          limit: items_per_page
+        )
+      else
+        @pagy, recipes = pagy(
+          Recipe.where("title ILIKE ?", "%#{search_param}%").
+            includes(:author, :category, :cuisine, :ingredients),
+          limit: items_per_page
+        )
+      end
     else
       @pagy, recipes = pagy(Recipe.includes(:author, :category, :cuisine, :ingredients), limit: items_per_page)
     end
@@ -45,6 +53,10 @@ class RecipesController < ApplicationController
 
   def search_param
     params[:search]
+  end
+
+  def search_by_ingredients
+    params[:mode].nil? || params[:mode] == "ingredients"
   end
 
   # return array of terms which are separated by whitespace
