@@ -19,26 +19,24 @@ class Ingredient < ApplicationRecord
   def self.relevance_ranked_for(terms)
     return none if terms.blank?
 
-    # Build a WHERE clause like "raw_text ILIKE ? OR raw_text ILIKE ? ..."
-    # and matching bind values ["%egg%", "%eggs%", …]
+    # Match all terms in raw_text via OR
     where_clause = terms.map { "raw_text ILIKE ?" }.join(" OR ")
     values = terms.map { |term| "%#{term.downcase}%" }
 
     # Sub-query to count total ingredient rows per recipe
-    totals_sql = Ingredient.select("recipe_id, COUNT(*) AS total_ingredients").group(:recipe_id).to_sql
+    totals = Ingredient.select("recipe_id, COUNT(*) AS total_ingredients").group(:recipe_id)
 
-    # Main sub-query:
-    # - JOIN totals to get total_ingredients
-    # - Filter ingredients by search terms
-    # - COUNT(*) = matched_ingredients
-    # - Compute relevance % = matched_ingredients / total_ingredients * 100
-    joins("JOIN (#{totals_sql}) AS totals ON totals.recipe_id = ingredients.recipe_id")
+    # Main query: matched ingredients + relevance %
+    Ingredient
       .select(
-        :recipe_id,
-        "COUNT(*) AS matched_ingredients",
-        "totals.total_ingredients",
-        "ROUND(COUNT(*) * 100.0 / totals.total_ingredients, 2) AS relevance" # percentage match
+        [
+          "ingredients.recipe_id",
+          "COUNT(*) AS matched_ingredients",
+          "totals.total_ingredients",
+          "ROUND(COUNT(*) * 100.0 / totals.total_ingredients, 2) AS relevance"
+        ].join(", ")
       )
+      .joins("JOIN (#{totals.to_sql}) AS totals ON totals.recipe_id = ingredients.recipe_id")
       .where(where_clause, *values)
       .group("ingredients.recipe_id, totals.total_ingredients")
   end
