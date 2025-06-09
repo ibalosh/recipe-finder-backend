@@ -33,11 +33,7 @@ class RecipesController < ApplicationController
 
     render json: recipe.as_json(detailed: true)
   rescue ActiveRecord::RecordNotFound
-    render json: {
-      error: {
-        message: "Recipe not found."
-      }
-    }, status: :not_found
+    render json: construct_api_error("Recipe not found."), status: :not_found
   end
 
   private

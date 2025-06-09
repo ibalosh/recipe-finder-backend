@@ -3,21 +3,25 @@ class ApplicationController < ActionController::API
   include Pagy::Backend
 
   def route_not_found
-    render json: { error: "Endpoint not found" }, status: :not_found
+    render json: construct_api_error("Endpoint not found."), status: :not_found
   end
 
   private
+
+  def construct_api_error(message)
+    {
+      error: {
+        message: message
+      }
+    }
+  end
 
   def authenticate_api!
     provided_token = request.headers["X-API-Token"]
     expected_token = Rails.application.credentials.api_token
 
     unless ActiveSupport::SecurityUtils.secure_compare(provided_token.to_s, expected_token.to_s)
-      render json: {
-        error: {
-          message: "Unauthorized access."
-        }
-      }, status: :unauthorized
+      render json: construct_api_error("Unauthorized access."), status: :unauthorized
     end
   end
 end

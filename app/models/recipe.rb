@@ -2,9 +2,12 @@ class Recipe < ApplicationRecord
   belongs_to :author, optional: true
   belongs_to :category, optional: true
   belongs_to :cuisine, optional: true
-  has_many :ingredients
+  has_many :ingredients, dependent: :destroy
 
+  validates :title, presence: true, length: { maximum: 300 }
   validates :instructions, presence: true, length: { minimum: 5 }
+  validates :ratings, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 5 }, allow_nil: true
+  validates :prep_time, :cook_time, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: false
 
   # Find recipes ranked by how well their ingredients match the given search terms.
   #
