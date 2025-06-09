@@ -23,7 +23,7 @@ class Recipe < ApplicationRecord
 
     joins("JOIN (#{matches.to_sql}) AS matches ON recipes.id = matches.recipe_id")
       .select("recipes.*, matches.relevance, matches.matched_ingredients")
-      .order("matches.relevance DESC, matches.matched_ingredients DESC")
+      .order("matches.relevance DESC, matches.matched_ingredients DESC, recipes.id DESC")
   end
 
   def as_json(options = {})

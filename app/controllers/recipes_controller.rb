@@ -5,10 +5,10 @@ class RecipesController < ApplicationController
         if search_by_ingredients
           Recipe.matching_by_ingredients(search_param_terms)
         else
-          Recipe.where("title ILIKE ?", "%#{search_param}%")
+          Recipe.where("title ILIKE ?", "%#{search_param}%").order(id: :desc)
         end
       else
-        Recipe.all
+        Recipe.all.order(id: :desc)
       end
 
     @pagy, recipes = pagy(
