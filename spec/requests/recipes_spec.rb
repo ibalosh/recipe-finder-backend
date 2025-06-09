@@ -44,8 +44,8 @@ RSpec.describe 'GET /recipes', type: :request do
 
       aggregate_failures do
         expect(parsed["recipes"].size).to eq(10)
-        expect(parsed["recipes"].first["title"]).to eq("Recipe 1")
-        expect(parsed["recipes"].last["title"]).to eq("Recipe 10")
+        expect(parsed["recipes"].first["title"]).to eq("Recipe 15")
+        expect(parsed["recipes"].last["title"]).to eq("Recipe 6")
 
         expect(parsed["pagination"]).
           to include(
@@ -67,7 +67,7 @@ RSpec.describe 'GET /recipes', type: :request do
 
       aggregate_failures do
         expect(parsed["recipes"].size).to eq(5)
-        expect(parsed["recipes"].first["title"]).to eq("Recipe 11")
+        expect(parsed["recipes"].first["title"]).to eq("Recipe 5")
 
         expect(parsed["pagination"]).
           to include(
