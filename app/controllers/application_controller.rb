@@ -13,7 +13,11 @@ class ApplicationController < ActionController::API
     expected_token = Rails.application.credentials.api_token
 
     unless ActiveSupport::SecurityUtils.secure_compare(provided_token.to_s, expected_token.to_s)
-      render json: { error: "Unauthorized" }, status: :unauthorized
+      render json: {
+        error: {
+          message: "Unauthorized access."
+        }
+      }, status: :unauthorized
     end
   end
 end
